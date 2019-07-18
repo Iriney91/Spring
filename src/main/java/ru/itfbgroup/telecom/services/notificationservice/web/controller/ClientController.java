@@ -60,4 +60,17 @@ public class ClientController {
         clientService.delete(id);
         return Result.success();
     }
+
+    @PostMapping(value = "/{clientId}/book/{bookId}")
+    Result addBook(@PathVariable Long clientId, @PathVariable Long bookId) {
+        System.out.println(clientId);
+        clientService.addBook(clientId, bookId);
+        return Result.success();
+    }
+
+    @DeleteMapping(value = "/{clientId}/book/{bookId}")
+    Result removeBook(@PathVariable Long clientId, @PathVariable Long bookId) {
+        clientService.removeBook(clientId, bookId);
+        return Result.success();
+    }
 }

@@ -2,18 +2,22 @@ package ru.itfbgroup.telecom.services.notificationservice.model;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.NaturalIdCache;
 
 import javax.persistence.*;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Data
 @EqualsAndHashCode(callSuper = true, exclude = {"publishingHouse", "binaryContent", "authorIds"})
 @Entity
 @SequenceGenerator(name = "MY_SEQ", sequenceName = "book_SEQ")
 @Table(indexes = {@Index(name = "book_iccid_idx", columnList = "iccid", unique = true), @Index(name = "book_name_idx", columnList = "name", unique = false)})
+@NaturalIdCache
+@org.hibernate.annotations.Cache(
+        usage = CacheConcurrencyStrategy.READ_WRITE
+)
 public class Book extends IDIdentity {
 
     @Column(updatable = false, nullable = false)
@@ -45,4 +49,11 @@ public class Book extends IDIdentity {
             inverseJoinColumns = @JoinColumn(name = "Author_ID", referencedColumnName = "ID")
     )
     private Set <Author> authors = new HashSet<>();
+
+    @OneToMany(
+            mappedBy = "book",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<BookClient> clients = new ArrayList<>();
 }

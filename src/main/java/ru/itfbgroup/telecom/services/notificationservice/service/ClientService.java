@@ -6,7 +6,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import ru.itfbgroup.telecom.services.notificationservice.model.Book;
 import ru.itfbgroup.telecom.services.notificationservice.model.Client;
+import ru.itfbgroup.telecom.services.notificationservice.repository.BookRepository;
 import ru.itfbgroup.telecom.services.notificationservice.repository.ClientRepository;
 import ru.itfbgroup.telecom.services.notificationservice.web.dto.ClientPaginalRequestDTO;
 
@@ -19,6 +21,7 @@ public class ClientService {
     private final ApplicationContext context;
 
     private final ClientRepository clientRepository;
+    private final BookRepository bookRepository;
 
     public Page<Client> getPaginatedBySearchRequest(ClientPaginalRequestDTO clientPaginalRequestDTO) {
         if (clientPaginalRequestDTO.getSortColumn() == null)
@@ -53,7 +56,7 @@ public class ClientService {
 
     public Client create(Client client) {
         if (client == null) return null;
-        return create(client.getLogin(),client.getPassword(), client.getFullName(),client.getUserRole());
+        return create(client.getLogin(), client.getPassword(), client.getFullName(), client.getUserRole());
     }
 
     public Client create(String login, String password, String name, String role) {
@@ -73,6 +76,24 @@ public class ClientService {
         } else {
             log.info(String.format("Customer with %s login already exist", login));
         }
-        return  client;
+        return client;
+    }
+
+    public Client addBook(Long clientId, Long bookId) {
+        Client client = clientRepository.getOne(clientId);
+        Book book = bookRepository.getOne(bookId);
+
+        client.addBook(book);
+
+        return client;
+    }
+
+    public Client removeBook(Long clientId, Long bookId) {
+        Client client = clientRepository.getOne(clientId);
+        Book book = bookRepository.getOne(bookId);
+
+        client.removeBook(book);
+
+        return client;
     }
 }
